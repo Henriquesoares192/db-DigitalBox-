@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>DigitalBox</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+    .produto { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: white; }
+  </style>
+</head>
+<body>
+  <h1>DigitalBox - Loja</h1>
+
+  <h2>Cadastro</h2>
+  <form id="formCadastro">
+    Nome: <input type="text" name="nome"><br>
+    Email: <input type="email" name="email"><br>
+    Senha: <input type="password" name="senha"><br>
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <h2>Login</h2>
+  <form id="formLogin">
+    Email: <input type="email" name="email"><br>
+    Senha: <input type="password" name="senha"><br>
+    <button type="submit">Entrar</button>
+  </form>
+
+  <h2>Produtos</h2>
+  <div id="produtos"></div>
+
+  <script>
+    // Cadastrar
+    document.getElementById('formCadastro').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const r = await fetch('/cadastro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      alert(await r.text());
+    };
+
+    // Login
+    document.getElementById('formLogin').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const r = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      alert(await r.text());
+    };
+
+    // Produtos
+    async function carregarProdutos() {
+      const r = await fetch('/produtos');
+      const produtos = await r.json();
+      const div = document.getElementById('produtos');
+      produtos.forEach(p => {
+        div.innerHTML += `<div class="produto">
+          <h3>${p.nome}</h3>
+          <img src="${p.imagem}" width="150"><br>
+          Preço: R$ ${p.preco}
+        </div>`;
+      });
+    }
+
+    carregarProdutos();
+  </script>
+</body>
+</html>
